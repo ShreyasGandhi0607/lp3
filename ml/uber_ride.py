@@ -126,4 +126,7 @@ y_pred_rf = random_forest.predict(X_test)
 
 # Evaluation Metrics for Random Forest
 print("\nRandom Forest Regression Performance:")
-print("Mean Absolute Error:", metrics.mean_absolute_error(y_test
+print("Mean Absolute Error:", metrics.mean_absolute_error(y_test, y_pred_rf))
+print("Mean Squared Error:", metrics.mean_squared_error(y_test, y_pred_rf))
+print("Root Mean Squared Error:", np.sqrt(metrics.mean_squared_error(y_test, y_pred_rf)))
+print("R Squared (R²):", metrics.r2_score(y_test, y_pred_rf))
