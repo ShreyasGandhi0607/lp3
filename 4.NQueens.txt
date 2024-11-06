@@ -1,0 +1,80 @@
+public class NQueens {
+    static char[][] result = new char[8][8];
+    static boolean solutionFound = false; // Flag to track if a solution is found
+
+    private static void implement(int col, char[][] board, int n, boolean[] backRow, boolean[] upperDiagonal, boolean[] lowerDiagonal) {
+        if (col >= n) {
+            // Copy the solution to the result array and mark solution as found
+            solutionFound = true;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    result[i][j] = board[i][j];
+                }
+            }
+            return;
+        }
+
+        for (int row = 0; row < n; row++) {
+            if (!backRow[row] && !upperDiagonal[n - 1 + col - row] && !lowerDiagonal[row + col]) {
+                // Place the queen
+                board[row][col] = 'Q';
+                backRow[row] = true;
+                upperDiagonal[n - 1 + col - row] = true;
+                lowerDiagonal[row + col] = true;
+
+                // Recurse to place the next queen
+                implement(col + 1, board, n, backRow, upperDiagonal, lowerDiagonal);
+
+                // Backtrack and remove the queen
+                board[row][col] = '.';
+                backRow[row] = false;
+                upperDiagonal[n - 1 + col - row] = false;
+                lowerDiagonal[row + col] = false;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 8;
+        char[][] board = new char[n][n];
+
+        // Initialize the board with empty positions
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = '.';
+                result[i][j] = '.';
+            }
+        }
+
+        // Place the first queen at a specific location, e.g., (0,0)
+        int firstRow = 7, firstCol = 0;
+        board[firstRow][firstCol] = 'Q';
+
+        // Initialize helper arrays and mark the first queen's row and diagonals as occupied
+        boolean[] backRow = new boolean[n];
+        boolean[] upperDiagonal = new boolean[2 * n - 1];
+        boolean[] lowerDiagonal = new boolean[2 * n - 1];
+
+        // Mark the first queen's positions in helper arrays
+        backRow[firstRow] = true;
+        upperDiagonal[n - 1 + firstCol - firstRow] = true;
+        lowerDiagonal[firstRow + firstCol] = true;
+
+        // Start placing queens from the next column
+        implement(1, board, n, backRow, upperDiagonal, lowerDiagonal);
+
+        // Check if a solution was found
+        if (solutionFound) {
+            // Print the resulting board
+            System.out.println("Solution found:");
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    System.out.print(result[i][j] + "       ");
+                }
+                System.out.println();
+            }
+        } else {
+            System.out.println("No valid placement for the remaining queens is possible.");
+        }
+    }
+}
