@@ -1,80 +1,53 @@
-public class NQueens {
-    static char[][] result = new char[8][8];
-    static boolean solutionFound = false; // Flag to track if a solution is found
+# Function to print the board
+def print_board(board):
+    for row in board:
+        print(" ".join(str(cell) for cell in row))
+    print("\n")
 
-    private static void implement(int col, char[][] board, int n, boolean[] backRow, boolean[] upperDiagonal, boolean[] lowerDiagonal) {
-        if (col >= n) {
-            // Copy the solution to the result array and mark solution as found
-            solutionFound = true;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    result[i][j] = board[i][j];
-                }
-            }
-            return;
-        }
+# Function to check if a queen can be placed at board[row][col]
+def is_safe(board, row, col, n):
+    # Check the column
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
 
-        for (int row = 0; row < n; row++) {
-            if (!backRow[row] && !upperDiagonal[n - 1 + col - row] && !lowerDiagonal[row + col]) {
-                // Place the queen
-                board[row][col] = 'Q';
-                backRow[row] = true;
-                upperDiagonal[n - 1 + col - row] = true;
-                lowerDiagonal[row + col] = true;
+    # Check upper-left diagonal
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
 
-                // Recurse to place the next queen
-                implement(col + 1, board, n, backRow, upperDiagonal, lowerDiagonal);
+    # Check upper-right diagonal
+    for i, j in zip(range(row, -1, -1), range(col, n)):
+        if board[i][j] == 1:
+            return False
 
-                // Backtrack and remove the queen
-                board[row][col] = '.';
-                backRow[row] = false;
-                upperDiagonal[n - 1 + col - row] = false;
-                lowerDiagonal[row + col] = false;
-            }
-        }
-    }
+    return True
 
-    public static void main(String[] args) {
-        int n = 8;
-        char[][] board = new char[n][n];
+# Function to solve the N-Queens problem
+def solve_n_queens(board, row, n):
+    # Base case: If all queens are placed
+    if row == n:
+        print_board(board)
+        return True
 
-        // Initialize the board with empty positions
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                board[i][j] = '.';
-                result[i][j] = '.';
-            }
-        }
+    # Place queen in each column in the current row
+    for col in range(n):
+        if is_safe(board, row, col, n):
+            board[row][col] = 1  # Place queen
 
-        // Place the first queen at a specific location, e.g., (0,0)
-        int firstRow = 7, firstCol = 0;
-        board[firstRow][firstCol] = 'Q';
+            # Recur to place the rest of the queens
+            if solve_n_queens(board, row + 1, n):
+                return True
 
-        // Initialize helper arrays and mark the first queen's row and diagonals as occupied
-        boolean[] backRow = new boolean[n];
-        boolean[] upperDiagonal = new boolean[2 * n - 1];
-        boolean[] lowerDiagonal = new boolean[2 * n - 1];
+            # If placing queen in board[row][col] doesn't lead to a solution
+            # then backtrack
+            board[row][col] = 0  # Remove queen
 
-        // Mark the first queen's positions in helper arrays
-        backRow[firstRow] = true;
-        upperDiagonal[n - 1 + firstCol - firstRow] = true;
-        lowerDiagonal[firstRow + firstCol] = true;
+    return False
 
-        // Start placing queens from the next column
-        implement(1, board, n, backRow, upperDiagonal, lowerDiagonal);
+# Initialize the board and solve the 8-Queens problem
+n = 8
+board = [[0 for _ in range(n)] for _ in range(n)]
 
-        // Check if a solution was found
-        if (solutionFound) {
-            // Print the resulting board
-            System.out.println("Solution found:");
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    System.out.print(result[i][j] + "       ");
-                }
-                System.out.println();
-            }
-        } else {
-            System.out.println("No valid placement for the remaining queens is possible.");
-        }
-    }
-}
+if not solve_n_queens(board, 0, n):
+    print("No solution exists")
